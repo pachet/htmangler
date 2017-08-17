@@ -1,2 +1,2 @@
-# htmangler
-A Ruby tool that uses Markov chains to generate probabilistic HTML pages
+# HTMangLer
+### *A Ruby tool that uses Markov chains to generate probabilistic HTML pages*
