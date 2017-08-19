@@ -1,35 +1,39 @@
+require_relative "markov-link"
+require "byebug"
 
 class MarkovNode
 
-  @link_count = 0
-  @links = { }
+  attr_accessor :is_terminal
 
-  def link_token(token)
-    link = get_link(token) || create_link(token)
-    link.increment_count
-    increment_link_count
+  alias is_terminal? is_terminal
+
+  def initialize(tokens)
+    @tokens = tokens
+    @linked_keys = [ ]
   end
 
-  def get_link(token)
-    @links[token]
+  def link_key(key)
+    @linked_keys.push(key)
   end
 
-  def create_link(token)
-    link = MarkovLink.new(token)
-    @links[token] = link
-    link
+  def random_key
+    @linked_keys.sample
   end
 
-  def get_random_link
-    index = rand(@link_count)
-
-    links.each do |link|
-      return link if link.count > index
-    end
+  def first_token
+    @tokens[0]
   end
 
-  def increment_links
-    @link_count += 1
+  def last_token
+    @tokens[-1]
+  end
+
+  def trailing_tokens
+    @tokens[1, @tokens.length]
+  end
+
+  def last_character
+    last_token[-1]
   end
 
 end
