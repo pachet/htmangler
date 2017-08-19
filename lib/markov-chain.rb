@@ -1,5 +1,6 @@
 require_relative "markov-node"
 require "byebug"
+require "json"
 
 class MarkovChain
 
@@ -129,6 +130,27 @@ class MarkovChain
 
   def random_initial_node
     @initial_nodes.sample
+  end
+
+  def serialize()
+    to_hash.to_json
+  end
+
+  def to_hash
+    {
+      "initial_nodes" => initial_node_keys,
+      "nodes" => nodes_to_hash
+    }
+  end
+
+  def initial_node_keys
+    @initial_nodes.collect do |node|
+      node.tokens.join(@delimiter)
+    end
+  end
+
+  def nodes_to_hash
+    @nodes.map { |key, node| [key, node.linked_keys] }.to_h
   end
 
 end

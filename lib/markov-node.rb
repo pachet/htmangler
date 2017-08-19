@@ -2,6 +2,8 @@ require "byebug"
 
 class MarkovNode
 
+  attr_reader :tokens
+  attr_reader :linked_keys
   attr_accessor :is_terminal
 
   alias is_terminal? is_terminal
