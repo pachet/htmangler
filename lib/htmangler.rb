@@ -14,9 +14,11 @@ def mangle(text)
   }
 end
 
-mangle($stdin.read) { |segment|
+input = $stdin.read
+
+mangle(input) { |segment|
   print segment
 }
 
-print "\n"
+print "\n\n"
 

@@ -49,7 +49,7 @@ class MarkovChain
     return if @token_queue.length != @order
 
     final_tokens = next_tokens
-    get_or_create_node(final_tokens)
+    @last_node = get_or_create_node(final_tokens)
   end
 
   def next_tokens
@@ -64,6 +64,7 @@ class MarkovChain
     node = get_or_create_node(source_tokens)
     target_key = key_from_tokens(target_tokens)
     node.link_key(target_key)
+    @last_node = node
   end
 
   def get_node(tokens)
@@ -72,9 +73,9 @@ class MarkovChain
 
   def create_node(tokens)
     node = MarkovNode.new(tokens)
+
     add_initial_node(node) if !@last_node || @last_node.is_terminal?
     @nodes[key_from_tokens(tokens)] = node
-    @last_node = node
 
     node.is_terminal = true if is_terminal_character(node.last_character)
 
