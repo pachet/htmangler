@@ -11,6 +11,43 @@ class MarkovChain
   DEFAULT_DELIMITER = ' '
   DEFAULT_TERMINAL_CHARACTERS = ['.', '!', '?']
 
+  public
+
+  def add_token(token)
+    queue_token token
+    process_token_queue
+  end
+
+  def generate(phrases)
+    phrase_count = 0
+    node = nil
+
+    while (phrase_count < phrases)
+      node = get_node_after(node)
+      segment = node.first_token
+
+      if node.is_terminal?
+        phrase_count += 1
+      elsif phrase_count < phrases
+        segment += @delimiter
+      end
+
+      yield segment
+    end
+  end
+
+  def finalize
+    clear_token_queue
+    @last_node.is_terminal = true
+  end
+
+  def serialize()
+    to_hash.to_json
+  end
+
+
+  private
+
   def initialize(
     order = MarkovChain::DEFAULT_ORDER,
     delimiter = MarkovChain::DEFAULT_DELIMITER,
@@ -24,11 +61,6 @@ class MarkovChain
     @nodes = { }
     @initial_nodes = [ ]
     @last_node = nil
-  end
-
-  def add_token(token)
-    queue_token token
-    process_token_queue
   end
 
   def queue_token(token)
@@ -72,7 +104,7 @@ class MarkovChain
   end
 
   def create_node(tokens)
-    node = MarkovNode.new(tokens)
+    node = instantiate_node(tokens)
 
     add_initial_node(node) if !@last_node || @last_node.is_terminal?
     @nodes[key_from_tokens(tokens)] = node
@@ -80,6 +112,10 @@ class MarkovChain
     node.is_terminal = true if is_terminal_character(node.last_character)
 
     node
+  end
+
+  def instantiate_node(tokens)
+    MarkovNode.new(tokens)
   end
 
   def get_or_create_node(tokens)
@@ -92,29 +128,6 @@ class MarkovChain
 
   def key_from_tokens(tokens)
     return tokens.join(@delimiter)
-  end
-
-  def finalize
-    clear_token_queue
-    @last_node.is_terminal = true
-  end
-
-  def generate(phrases)
-    phrase_count = 0
-    node = nil
-
-    while (phrase_count < phrases)
-      node = get_node_after(node)
-      segment = node.first_token
-
-      if node.is_terminal?
-        phrase_count += 1
-      elsif phrase_count < phrases
-        segment += @delimiter
-      end
-
-      yield segment
-    end
   end
 
   def get_node_after(node)
@@ -133,10 +146,6 @@ class MarkovChain
     @initial_nodes.sample
   end
 
-  def serialize()
-    to_hash.to_json
-  end
-
   def to_hash
     {
       "initial_nodes" => initial_node_keys,
@@ -153,6 +162,8 @@ class MarkovChain
   def nodes_to_hash
     @nodes.map { |key, node| [key, node.linked_keys] }.to_h
   end
+
+
 
 end
 
