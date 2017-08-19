@@ -8,10 +8,8 @@ class MarkovNode
 
   alias is_terminal? is_terminal
 
-  def initialize(tokens)
-    @tokens = tokens
-    @linked_keys = [ ]
-  end
+
+  public
 
   def link_key(key)
     @linked_keys.push(key)
@@ -25,16 +23,20 @@ class MarkovNode
     @tokens[0]
   end
 
-  def last_token
-    @tokens[-1]
-  end
-
-  def trailing_tokens
-    @tokens[1, @tokens.length]
-  end
-
   def last_character
     last_token[-1]
+  end
+
+
+  private
+
+  def initialize(tokens)
+    @tokens = tokens
+    @linked_keys = [ ]
+  end
+
+  def last_token
+    @tokens[-1]
   end
 
 end
