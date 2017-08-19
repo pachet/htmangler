@@ -7,12 +7,16 @@ def mangle(text)
     chain.add_token(word)
   end
 
-  chain.generate do |value|
+  chain.finalize
+
+  chain.generate(1) { |value|
     yield value
-  end
+  }
 end
 
-mangle('a a b a b a c a b d a b a c c b a d e f d a b d e f a b d e f c c e f c c c b c c c f b f b f b') { |word|
-  puts word
+mangle($stdin.read) { |segment|
+  print segment
 }
+
+print "\n"
 
