@@ -46,6 +46,13 @@ class MarkovChain
   end
 
 
+  protected
+
+  def instantiate_node(tokens)
+    MarkovNode.new(tokens)
+  end
+
+
   private
 
   def initialize(
@@ -112,10 +119,6 @@ class MarkovChain
     node.is_terminal = true if is_terminal_character(node.last_character)
 
     node
-  end
-
-  def instantiate_node(tokens)
-    MarkovNode.new(tokens)
   end
 
   def get_or_create_node(tokens)

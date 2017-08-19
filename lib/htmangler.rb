@@ -1,7 +1,7 @@
-require_relative "markov-chain"
+require_relative "html-chain"
 
 def mangle(text)
-  chain = MarkovChain.new
+  chain = HTMLChain.new
 
   text.split(' ').each do |word|
     chain.add_token(word)
