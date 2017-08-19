@@ -1,4 +1,3 @@
-require_relative "markov-link"
 require "byebug"
 
 class MarkovNode
