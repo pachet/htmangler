@@ -6,20 +6,11 @@ class HTMLChain < MarkovChain
   protected
 
   def instantiate_node(tokens)
-    node = HTMLNode.new(tokens)
-
-    key = key_from_tokens(tokens)
-
-    node.is_start_tag = true if is_start_tag_key(key)
-    node.is_end_tag = true if is_end_tag_key(key)
-
-    node
+    HTMLNode.new(tokens)
   end
 
   def get_output_for_node(node)
-    return '</END>' if node.is_end_tag
-
-    super(node)
+    node.is_end_tag ? next_end_tag : super(node)
   end
 
   def text_to_tokens(text)
@@ -60,14 +51,13 @@ class HTMLChain < MarkovChain
     result
   end
 
-  private
-
-  def is_start_tag_key(key)
-    key[0] == '<' && key[1] != '/'
+  def last_node_is_terminal
+    false
   end
 
-  def is_end_tag_key(key)
-    key[0] == '<' && key[1] == '/'
+  def determine_node_terminality(node)
+    node.is_terminal = false
+    node
   end
 
 end
