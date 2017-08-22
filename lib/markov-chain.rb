@@ -13,9 +13,12 @@ class MarkovChain
 
   public
 
-  def add_token(token)
-    queue_token token
-    process_token_queue
+  def set_text(text)
+    text = trim_text(text)
+    text_to_tokens(text).each do |token|
+      add_token(token)
+    end
+    finalize
   end
 
   def generate(phrases)
@@ -24,7 +27,8 @@ class MarkovChain
 
     while (phrase_count < phrases)
       node = get_node_after(node)
-      segment = node.first_token
+
+      segment = get_output_for_node(node)
 
       if node.is_terminal?
         phrase_count += 1
@@ -36,11 +40,6 @@ class MarkovChain
     end
   end
 
-  def finalize
-    clear_token_queue
-    @last_node.is_terminal = true
-  end
-
   def serialize()
     to_hash.to_json
   end
@@ -50,6 +49,18 @@ class MarkovChain
 
   def instantiate_node(tokens)
     MarkovNode.new(tokens)
+  end
+
+  def get_output_for_node(node)
+    node.first_token
+  end
+
+  def text_to_tokens(text)
+    return text.split(@delimiter)
+  end
+
+  def trim_text(text)
+    text.gsub(/[\r\n ]+/, ' ').strip
   end
 
 
@@ -68,6 +79,11 @@ class MarkovChain
     @nodes = { }
     @initial_nodes = [ ]
     @last_node = nil
+  end
+
+  def add_token(token)
+    queue_token token
+    process_token_queue
   end
 
   def queue_token(token)
@@ -89,6 +105,12 @@ class MarkovChain
 
     final_tokens = next_tokens
     @last_node = get_or_create_node(final_tokens)
+  end
+
+  def finalize
+    clear_token_queue
+    @last_node.is_terminal = true
+    self
   end
 
   def next_tokens
