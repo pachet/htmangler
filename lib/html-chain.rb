@@ -5,11 +5,17 @@ class HTMLChain < MarkovChain
 
   protected
 
+  def initialize_defaults
+    super
+    @start_nodes = [ ]
+  end
+
   def instantiate_node(tokens)
     HTMLNode.new(tokens)
   end
 
   def get_output_for_node(node)
+    add_start_node(node) if node.is_start_tag?
     node.is_end_tag ? next_end_tag : super(node)
   end
 
@@ -52,12 +58,29 @@ class HTMLChain < MarkovChain
   end
 
   def last_node_is_terminal
-    false
+    !@last_node
   end
 
   def determine_node_terminality(node)
     node.is_terminal = false
     node
+  end
+
+
+  private
+
+  def add_start_node(node)
+    @start_nodes.push(node)
+  end
+
+  def next_end_tag
+    return '' if @start_nodes.empty?
+
+    last_start_node.to_end_tag
+  end
+
+  def last_start_node
+    @start_nodes.pop
   end
 
 end

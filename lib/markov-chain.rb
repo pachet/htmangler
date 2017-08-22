@@ -27,7 +27,6 @@ class MarkovChain
 
     while (phrase_count < phrases)
       node = get_node_after(node)
-
       segment = get_output_for_node(node)
 
       if node.is_terminal?
@@ -46,6 +45,13 @@ class MarkovChain
 
 
   protected
+
+  def initialize_defaults
+    @token_queue = []
+    @nodes = { }
+    @initial_nodes = [ ]
+    @last_node = nil
+  end
 
   def instantiate_node(tokens)
     MarkovNode.new(tokens)
@@ -84,10 +90,7 @@ class MarkovChain
     @delimiter = delimiter
     @terminal_characters = terminal_characters
 
-    @token_queue = []
-    @nodes = { }
-    @initial_nodes = [ ]
-    @last_node = nil
+    initialize_defaults
   end
 
   def add_token(token)
