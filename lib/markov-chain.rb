@@ -10,6 +10,7 @@ class MarkovChain
   DEFAULT_ORDER = 1
   DEFAULT_DELIMITER = ' '
   DEFAULT_TERMINAL_CHARACTERS = ['.', '!', '?']
+  DEFAULT_PHRASE_COUNT = 2
 
   public
 
@@ -21,17 +22,17 @@ class MarkovChain
     finalize
   end
 
-  def generate(phrases)
-    phrase_count = 0
+  def generate(phrase_count = MarkovChain::DEFAULT_PHRASE_COUNT)
+    index = 0
     node = nil
 
-    while (phrase_count < phrases)
+    while (index < phrase_count)
       node = get_node_after(node)
       segment = get_output_for_node(node)
 
       if node.is_terminal?
-        phrase_count += 1
-      elsif phrase_count < phrases
+        index += 1
+      elsif index < phrase_count
         segment += @delimiter
       end
 

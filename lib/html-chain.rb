@@ -3,6 +3,17 @@ require_relative "html-node"
 
 class HTMLChain < MarkovChain
 
+  public
+
+  def generate(phrase_count = 1)
+    super(phrase_count)
+
+    while @start_nodes.length > 0
+      yield next_end_tag
+    end
+  end
+
+
   protected
 
   def initialize_defaults
@@ -15,7 +26,7 @@ class HTMLChain < MarkovChain
   end
 
   def get_output_for_node(node)
-    add_start_node(node) if node.is_start_tag?
+    queue_start_node(node) if node.is_start_tag?
     node.is_end_tag ? next_end_tag : super(node)
   end
 
@@ -69,7 +80,7 @@ class HTMLChain < MarkovChain
 
   private
 
-  def add_start_node(node)
+  def queue_start_node(node)
     @start_nodes.push(node)
   end
 
