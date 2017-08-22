@@ -63,6 +63,15 @@ class MarkovChain
     text.gsub(/[\r\n ]+/, ' ').strip
   end
 
+  def last_node_is_terminal
+    !@last_node || @last_node.is_terminal?
+  end
+
+  def determine_node_terminality(node)
+    node.is_terminal = true if is_terminal_character(node.last_character)
+    node
+  end
+
 
   private
 
@@ -135,12 +144,9 @@ class MarkovChain
   def create_node(tokens)
     node = instantiate_node(tokens)
 
-    add_initial_node(node) if !@last_node || @last_node.is_terminal?
+    add_initial_node(node) if last_node_is_terminal
     @nodes[key_from_tokens(tokens)] = node
-
-    node.is_terminal = true if is_terminal_character(node.last_character)
-
-    node
+    determine_node_terminality(node)
   end
 
   def get_or_create_node(tokens)
